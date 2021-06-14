@@ -1,0 +1,16 @@
+FROM jenkins/jenkins:lts-alpine
+USER root
+
+#install python
+RUN apk add python3 && \
+     python3 -m ensurepip && \
+     pip3 install --upgrade pip setuptools && \
+     if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
+     if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
+     rm -r /root/.cache
+
+#install additional requirements for python build and dpkg to install
+RUN apk add pkgconf build-base py-pip python3-dev postgresql-dev openssl-dev postgresql-client libffi-dev libc-dev gcc dpkg rust cargo make
+
+RUN curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose
